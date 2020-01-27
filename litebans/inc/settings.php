@@ -8,12 +8,12 @@ final class Settings {
         $this->lang = 'en_US.utf8';
 
         // Database information
-        $this->host = 'na-sql.pebblehost.com';
+        $this->host = 'na01-sql.pebblehost.com	';
         $this->port = 3306;
 
-        $database = 'customer_91771';
+        $database = 'customer_91771	';
 
-        $username = 'customer_91771';
+        $username = 'customer_91771	';
         $password = '04ddf9ab31';
 
         // If you set a table prefix in config.yml, set it here as well
@@ -26,8 +26,7 @@ final class Settings {
         $this->name = 'LiteBans';
 
         // Clicking on the header name will send you to this address.
-        // $this->name_link = 'https://example.com';
-        $this->name_link = 'index.php';
+        $this->name_link = '#';
 
         // Show server scope column?
         $this->show_server_scope = true;
@@ -180,7 +179,7 @@ final class Settings {
                 $st->fetch();
                 $st->closeCursor();
             } catch (PDOException $e) {
-                Settings::handle_error($this, $e);
+              //  Settings::handle_error($this, $e);
             }
             if ($driver === 'pgsql') {
                 $this->conn->query("SET NAMES 'UTF8';");
@@ -210,14 +209,7 @@ final class Settings {
                 }
             }
             if (strstr($message, "Base table or view not found:")) {
-                try {
-                    $st = $settings->conn->query("SELECT * FROM " . $settings->table['bans'] . " LIMIT 1;");
-                    $st->fetch();
-                    $st->closeCursor();
-                } catch (PDOException $e) {
-                    $settings->redirect("error/tables-not-found.php");
-                }
-                $settings->redirect("error/outdated-plugin.php");
+                $settings->redirect("error/tables-not-found.php");
             }
             if (strstr($message, "Unknown column")) {
                 $settings->redirect("error/outdated-plugin.php");
@@ -243,21 +235,21 @@ final class Settings {
         date_default_timezone_set("UTC"); // temporarily set UTC timezone for testing purposes
 
         $fail = false;
-        $test = gmstrftime($this->date_format, 0);
+        $test = strftime($this->date_format, 0);
         if ($test == false) {
             ob_start();
             var_dump($test);
             $testdump = ob_get_clean();
-            echo("Error: date_format test failed. gmstrftime(\"" . $this->date_format . "\",0) returned " . $testdump);
+            echo("Error: date_format test failed. strftime(\"" . $this->date_format . "\",0) returned " . $testdump);
             $fail = true;
         }
 
-        $test = gmstrftime("%Y-%m-%d %H:%M", 0);
+        $test = strftime("%Y-%m-%d %H:%M", 0);
         if ($test !== "1970-01-01 00:00") {
             ob_start();
             var_dump($test);
             $testdump = ob_get_clean();
-            echo("Assertion failed: gmstrftime(\"%Y-%m-%d %H:%M\",0) != \"1970-01-01 00:00\"<br>");
+            echo("Assertion failed: strftime(\"%Y-%m-%d %H:%M\",0) != \"1970-01-01 00:00\"<br>");
             echo("Actual result: " . $testdump);
             $fail = true;
         }

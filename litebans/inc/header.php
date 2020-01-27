@@ -14,17 +14,17 @@ function __construct($page) {
         $t_kicks = $t['kicks'];
         try {
             $st = $page->conn->query("SELECT
-            (SELECT COUNT(*) FROM $t_bans),
-            (SELECT COUNT(*) FROM $t_mutes),
-            (SELECT COUNT(*) FROM $t_warnings),
-            (SELECT COUNT(*) FROM $t_kicks)");
-            ($row = $st->fetch(PDO::FETCH_NUM)) or die('Failed to fetch row counts.');
+            (SELECT COUNT(*) FROM $t_bans) AS c_bans,
+            (SELECT COUNT(*) FROM $t_mutes) AS c_mutes,
+            (SELECT COUNT(*) FROM $t_warnings) AS c_warnings,
+            (SELECT COUNT(*) FROM $t_kicks) AS c_kicks");
+            ($row = $st->fetch(PDO::FETCH_ASSOC)) or die('Failed to fetch row counts.');
             $st->closeCursor();
             $this->count = array(
-                'bans.php'     => $row[0],
-                'mutes.php'    => $row[1],
-                'warnings.php' => $row[2],
-                'kicks.php'    => $row[3],
+                'bans.php'     => $row['c_bans'],
+                'mutes.php'    => $row['c_mutes'],
+                'warnings.php' => $row['c_warnings'],
+                'kicks.php'    => $row['c_kicks'],
             );
         } catch (PDOException $ex) {
             Settings::handle_error($page->settings, $ex);
@@ -33,23 +33,24 @@ function __construct($page) {
 }
 
 function navbar($links) {
-    echo '<ul class="navbar-nav mr-auto">';
+    echo '<ul class="nav navbar-nav">';
     foreach ($links as $page => $title) {
         $li = "li";
-        $class = "nav-item";
         if ((substr($_SERVER['SCRIPT_NAME'], -strlen($page))) === $page) {
-            $class .= " active";
+            $li .= ' class="active"';
         }
-        $li .= " class=\"$class\"";
-
         if ($this->page->settings->header_show_totals && isset($this->count[$page])) {
-            $title .= " <span class=\"badge badge-secondary\">";
+            $title .= " <span class=\"badge\">";
             $title .= $this->count[$page];
             $title .= "</span>";
         }
-        echo "<$li><a class=\"nav-link\" href=\"$page\">$title</a></li>";
+        echo "<$li><a href=\"$page\">$title</a></li>";
     }
     echo '</ul>';
+}
+
+function autoversion($file) {
+    return $file . "?" . filemtime($file);
 }
 
 function print_header() {
@@ -62,11 +63,10 @@ $settings = $this->page->settings;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="LiteBans">
-    <link href="<?php echo $this->page->autoversion('inc/img/favicon.ico'); ?>" rel="shortcut icon">
+    <link rel="shortcut icon" href="inc/img/minecraft.ico">
     <!-- CSS -->
-    <link href="<?php echo $this->page->autoversion('inc/css/bootstrap.min.css'); ?>" rel="stylesheet">
-    <link href="<?php echo $this->page->autoversion('inc/css/glyphicons.min.css'); ?>" rel="stylesheet">
-    <link href="<?php echo $this->page->autoversion('inc/css/custom.css'); ?>" rel="stylesheet">
+    <link href="<?php echo $this->autoversion('inc/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link href="<?php echo $this->autoversion('inc/css/custom.css'); ?>" rel="stylesheet">
     <script type="text/javascript">
         function withjQuery(f) {
             if (window.jQuery) f();
@@ -77,37 +77,37 @@ $settings = $this->page->settings;
     </script>
 </head>
 
-
-<header role="banner">
-    <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
-        <div class="container">
+<header class="navbar navbar-default navbar-static-top" role="banner">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#litebans-navbar" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="<?php echo $settings->name_link; ?>">
                 <?php echo $settings->name; ?>
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#litebans-navbar"
-                    aria-controls="litebans-navbar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="litebans-navbar">
-                <?php
-                $this->navbar(array(
-                    "index.php"    => $this->page->t("title.index"),
-                    "bans.php"     => $this->page->t("title.bans"),
-                    "mutes.php"    => $this->page->t("title.mutes"),
-                    "warnings.php" => $this->page->t("title.warnings"),
-                    "kicks.php"    => $this->page->t("title.kicks"),
-                ));
-                ?>
-                <ul class="nav navbar-nav my-2 my-lg-0">
-                        <a href="https://www.spigotmc.org/resources/litebans.3715/"
-                           target="_blank">&copy; LiteBans</a>
-                </ul>
-            </div>
         </div>
+        <nav id="litebans-navbar" class="collapse navbar-collapse">
+            <?php
+            $this->navbar(array(
+                "index.php"    => $this->page->t("title.index"),
+                "bans.php"     => $this->page->t("title.bans"),
+                "mutes.php"    => $this->page->t("title.mutes"),
+                "warnings.php" => $this->page->t("title.warnings"),
+                "kicks.php"    => $this->page->t("title.kicks"),
+            ));
+            ?>
+            <div class="nav navbar-nav navbar-right">
+                <a href="https://www.spigotmc.org/resources/litebans.3715/" class="navbar-text"
+                   target="_blank">&copy; LiteBans</a>
+            </div>
+        </nav>
+    </div>
 </header>
-
-<br><br><br>
 <?php
 }
 }

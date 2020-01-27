@@ -59,12 +59,6 @@ class Page {
             'warn' => $this->t("page.expired.warning"),
             'kick' => null,
         );
-        $this->punished_by = array(
-            'ban'  => $this->t("generic.banned.by"),
-            'mute' => $this->t("generic.muted.by"),
-            'warn' => $this->t("generic.warned.by"),
-            'kick' => $this->t("generic.kicked.by"),
-        );
 
         if ($header) {
             $h = new Header($this);
@@ -81,8 +75,7 @@ class Page {
         if (array_key_exists($str, $this->defaultlang->array)) {
             return $this->defaultlang->array[$str];
         }
-//        return "404";
-        return $str;
+        return "404";
     }
 
     public function type_info($type) {
@@ -158,7 +151,7 @@ class Page {
 
             $st->execute();
 
-            $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $st->fetchAll();
 
             $st->closeCursor();
 
@@ -168,47 +161,17 @@ class Page {
         }
     }
 
-    function get_selection($table, $fatquery = null, $phpIsBroken = true) {
-        $columns = array("id", "uuid", "reason", "banned_by_name", "banned_by_uuid", "time", "until", "server_origin", "server_scope", "active", "ipban");
-        $bitColumns = array("active", "ipban");
-
-        if ($table === $this->settings->table['warnings']) {
-            array_push($columns, "warned");
-            array_push($bitColumns, "warned");
-        }
-
-        if ($table !== $this->settings->table['kicks']) {
-            array_push($columns, "removed_by_uuid", "removed_by_name", "removed_by_date");
-        }
-
+    function get_selection($table) {
         // Under certain versions of PHP, there is a bug with BIT columns.
         // An empty string is returned no matter what the value is.
         // Workaround: cast to unsigned.
-        if ($phpIsBroken === true) {
-            foreach ($bitColumns as $column) {
-                    unset($columns[$column]);
-                    $alias = $column;
-//                    if ($fatquery !== null) {
-//                        $alias = "$fatquery.$column";
-//                    }
-                    array_push($columns, "CAST($column AS UNSIGNED) AS $alias");
-            }
+        $selection = "id,uuid,reason,banned_by_name,banned_by_uuid,time,until,server_origin,server_scope,CAST(active AS UNSIGNED) AS active,CAST(ipban AS UNSIGNED) AS ipban";
+        if ($table === $this->settings->table['warnings']) {
+            $selection .= ",CAST(warned AS UNSIGNED) AS warned";
         }
-
-        // is there really no better way to do this?
-//        if ($fatquery !== null) {
-//            foreach ($columns as $column) {
-//                if (!array_key_exists($column, $bitColumns)) {
-//                    unset($columns[$column]);
-//                    array_push($columns, "$column AS $fatquery.$column");
-//                }
-//            }
-//        }
-
-        $selection = implode(",", $columns);
-
-//        echo $selection;
-
+        if ($table !== $this->settings->table['kicks']) {
+            $selection .= ",removed_by_uuid,removed_by_name,removed_by_date";
+        }
         return $selection;
     }
 
@@ -429,29 +392,20 @@ class Page {
     }
 
     function print_table_rows($row, $array, $print_headers = true) {
-        $type = $this->type;
         if (!$this->settings->show_server_scope) {
-            unset($array["server.name"]);
+            unset($array[$this->t("table.server.name")]);
         }
         if ($print_headers && !$this->table_headers_printed) {
             $headers = array_keys($array);
-            $headers_translated = array();
-            foreach ($headers as $header) {
-                if ($header === "executor" && $this->name !== "history") {
-                    $header = $this->punished_by[$type];
-                } else {
-                    $header = $this->t("table." . $header);
-                }
-                array_push($headers_translated, $header);
-            }
-            $this->table_print_headers($headers_translated);
+            $this->table_print_headers($headers);
             $this->table_headers_printed = true;
         }
         $id = $row['id'];
+        $type = $this->type;
         echo "<tr>";
         foreach ($array as $header => $text) {
             $a = "a";
-            if ($header === "received-warning") {
+            if ($header === $this->t("warnings.received")) {
                 $icon = ($text !== "0") ? "glyphicon-ok" : "glyphicon-remove";
                 $a .= " class=\"glyphicon $icon\" aria-hidden=true";
                 $text = "";
@@ -469,7 +423,7 @@ class Page {
         echo "<tbody>";
     }
 
-    function print_header($container_start = true, $title = null, $class = "modal-header litebans-header") {
+    function print_header($container_start = true, $title = null) {
         if ($title === null) {
             $title = $this->title;
         }
@@ -477,23 +431,22 @@ class Page {
             echo '<div class="container">';
         }
 
-        echo "<div class=\"row\"><div class=\"col-lg-12\"><h1 class=\"$class\">$title</h1></div>";
+        echo "<div class=\"row\"><div class=\"col-lg-12\"><h1 class=\"modal-header\">$title</h1></div></div>";
         if ($container_start) {
-            echo '</div><div class="row"><div class="col-lg-12">';
+            echo '<div class="row"><div class="col-lg-12">';
         }
     }
 
     function print_check_form() {
         $table = $this->name;
         echo '
-         <div class="row litebans-check">
-             <div class="litebans-check litebans-check-form">
-                 <form onsubmit="captureForm(event);" class="form-inline"><div class="form-group"><input type="text" class="form-control" id="user" placeholder="' . $this->t("generic.player-name") . '"></div><button type="submit" class="btn btn-primary" style="margin-left: 5px;">' . $this->t("action.check") . '</button></form>
+         <div style="text-align: left;" class="row">
+             <div style="margin-left: 15px;">
+                 <form onsubmit="captureForm(event);" class="form-inline"><div class="form-group"><input type="text" class="form-control" id="user" placeholder="' . $this->t("generic.player-name") . '"></div><button type="submit" class="btn btn-default" style="margin-left: 5px;">' . $this->t("action.check") . '</button></form>
              </div>
-             <script type="text/javascript">function captureForm(b){var o=$(".litebans-check-output");o.removeClass("show");var x=setTimeout(function(){o.html("<br>")}, 150);$.ajax({type:"GET",url:"check.php?name="+$("#user").val()+"&table=' . $table . '"}).done(function(c){clearTimeout(x);o.html(c);o.addClass("show")});b.preventDefault();return false};</script>
+             <script type="text/javascript">function captureForm(b){var o=$("#output");o.removeClass("in");var x=setTimeout(function(){o.html("<br>")}, 150);$.ajax({type:"GET",url:"check.php?name="+$("#user").val()+"&table=' . $table . '"}).done(function(c){clearTimeout(x);o.html(c);o.addClass("in")});b.preventDefault();return false};</script>
+             <div id="output" class="success fade" data-alert="alert" style="margin-left: 15px;"><br></div>
          </div>
-         <div class="litebans-check litebans-check-output fade" class="success fade" data-alert="alert"></div>
-         <br>
          ';
     }
 
@@ -545,10 +498,6 @@ class Page {
         echo "<!-- Page generated in $time seconds. -->";
 
         include_once './inc/footer.php';
-    }
-
-    function autoversion($file) {
-        return $file . "?" . filemtime($file);
     }
 
     function table_begin() {

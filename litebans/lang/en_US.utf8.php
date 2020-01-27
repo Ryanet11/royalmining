@@ -15,44 +15,29 @@ class DefaultLang {
         $array["title.player-history"] = "Recent Punishments for {name}";
         $array["title.staff-history"] = "Recent Punishments by {name}";
 
-
-        $array["generic.ban"] = "Ban";
-        $array["generic.mute"] = "Mute";
-        $array["generic.warn"] = "Warning";
-        $array["generic.kick"] = "Kick";
-
-        $array["generic.banned"] = "Banned";
-        $array["generic.muted"] = "Muted";
-        $array["generic.warned"] = "Warned";
-        $array["generic.kicked"] = "Kicked";
-
-        $array["generic.banned.by"] = $array["generic.banned"] . " By";
-        $array["generic.muted.by"] = $array["generic.muted"] . " By";
-        $array["generic.warned.by"] = $array["generic.warned"] . " By";
-        $array["generic.kicked.by"] = $array["generic.kicked"] . " By";
-
-        $array["generic.ipban"] = "IP " . $array["generic.ban"];
-        $array["generic.ipmute"] = "IP " . $array["generic.mute"];
-        $array["generic.type"] = "Type";
-        $array["generic.active"] = "Active";
-        $array["generic.inactive"] = "Inactive";
-        $array["generic.expired"] = "Expired";
-        $array["generic.permanent"] = "Permanent";
-        $array["generic.player-name"] = "Player";
-
         $array["page.expired.ban"] = '(Unbanned)';
         $array["page.expired.ban-by"] = '(Unbanned by {name})';
         $array["page.expired.mute"] = '(Unmuted)';
         $array["page.expired.mute-by"] = '(Unmuted by {name})';
-        $array["page.expired.warning"] = '(' . $array["generic.expired"] . ')';
+        $array["page.expired.warning"] = '(Expired)';
+
+        $array["generic.ban"] = "Ban";
+        $array["generic.mute"] = "Mute";
+        $array["generic.ipban"] = "IP " . $array["generic.ban"];
+        $array["generic.ipmute"] = "IP " . $array["generic.mute"];
+        $array["generic.warn"] = "Warning";
+        $array["generic.kick"] = "Kick";
+        $array["generic.type"] = "Type";
+        $array["generic.active"] = "Active";
+        $array["generic.inactive"] = "Inactive";
+        $array["generic.permanent"] = "Permanent";
+        $array["generic.player-name"] = "Player";
 
         $array["table.player"] = $array["generic.player-name"];
-        $array["table.type"] = $array["generic.type"];
         $array["table.executor"] = "Moderator";
         $array["table.reason"] = "Reason";
         $array["table.date"] = "Date";
         $array["table.expires"] = "Expires";
-        $array["table.received-warning"] = "Received Warning";
 
         $array["table.server.name"] = "Server";
         $array["table.server.scope"] = "Server Scope";
@@ -62,6 +47,8 @@ class DefaultLang {
 
         $array["action.check"] = "Check";
         $array["action.return"] = "Return to {origin}";
+
+        $array["warnings.received"] = "Received Warning";
 
         $array["error.missing-args"] = "Missing arguments.";
         $array["error.name.unseen"] = "{name} has not joined before.";

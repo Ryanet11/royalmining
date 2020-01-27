@@ -27,7 +27,7 @@ abstract class Info {
     }
 
     function name() {
-        return $this->page->t("generic." . $this->page->type);
+        return ucfirst($this->page->type);
     }
 
     function permanent() {
@@ -150,7 +150,6 @@ if ($st->execute(array($id))) {
     $page->print_title();
 
     $header = $page->name;
-    $badges = "";
 
     if (!($info instanceof KickInfo)) {
         $active = $page->active($row);
@@ -163,23 +162,19 @@ if ($st->execute(array($id))) {
                 $idx = "generic.ipmute";
             }
             if ($idx !== null) {
-                $badges .= "<span class='badge litebans-label-info litebans-label-ipban'>" . $page->t($idx) . "</span>";
+                $header .= "<span class='label label-danger litebans-label-info'>" . $page->t($idx) . "</span>";
             }
         }
         if ($active === true) {
-            $badges .= "<span class='badge litebans-label-info litebans-label-active'>" . $page->t("generic.active") . "</span>";
+            $header .= "<span class='label label-danger litebans-label-info'>" . $page->t("generic.active") . "</span>";
             if ($permanent) {
-                $badges .= "<span class='badge litebans-label-info litebans-label-permanent'>" . $page->t("generic.permanent") . "</span>";
+                $header .= "<span class='label label-danger litebans-label-info'>" . $page->t("generic.permanent") . "</span>";
             }
         } else {
-            if ($page->is_expired($row)) {
-                $badges .= "<span class='badge litebans-label-info litebans-label-expired'>" . $page->t("generic.expired") . "</span>";
-            } else {
-                $badges .= "<span class='badge litebans-label-info litebans-label-inactive'>" . $page->t("generic.inactive") . "</span>";
-            }
+            $header .= "<span class='label label-warning litebans-label-info'>" . $page->t("generic.inactive") . "</span>";
         }
     }
-    $page->print_header(true, $header . "<div class=\"litebans-label-container\">$badges</div>");
+    $page->print_header(true, $header);
 
     $map = $info->basic_info($row, $player_name);
 

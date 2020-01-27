@@ -5,16 +5,13 @@
 }
 
 /* header */
-.litebans-header {
-    display: block;
-    text-align: center;
-}
 
 .col-lg-12 {
     text-align: center;
 }
 
 /* tables */
+
 th {
     text-align: center;
 }
@@ -23,40 +20,27 @@ table tr td {
     padding-left: 0;
     padding-right: 0;
     vertical-align: middle !important;
-    text-align: center;
 }
 
 /* table links */
 a,
 a:hover,
 a:focus {
-    text-decoration: none;
+    text-decoration: none !important;
 }
 
 tr.hover {
     cursor: pointer;
 }
 
-/* check form */
-.litebans-check {
-    text-align: left;
-}
-
-.litebans-check-form {
-    margin-left: 15px;
-}
-
-.litebans-check-output {
-    margin-left: 3px;
-}
-
 /* pager */
+
 .litebans-pager {
     font-size: 30px;
 }
 
 .litebans-pager-number {
-    margin-top: 24px;
+    margin-top: 32px;
     text-align: center;
     font-size: 15px;
 }
@@ -82,51 +66,15 @@ tr.hover {
     text-align: center;
 }
 
-.litebans-index-main {
-}
-
-.litebans-index-sub {
-}
-
 /* info.php */
-.litebans-label-container {
-    width: 0;
-    display: inline-flex;
-}
-
 .litebans-label-info {
-    margin-left: 15px;
+    margin-left: 13px;
     font-size: 17px;
-}
-
-.litebans-label-inactive {
-    color: #fff;
-    background-color: #f79720;
-}
-
-.litebans-label-expired {
-    color: #fff;
-    background-color: #777;
-}
-
-.litebans-label-active {
-    color: #fff;
-    background-color: #ee5555;
-}
-
-.litebans-label-permanent {
-    color: #fff;
-    background-color: #ee5555;
-}
-
-.litebans-label-ipban {
-    color: #fff;
-    background-color: #ee5555;
 }
 
 /* history.php */
 .litebans-label-history {
-    font-size: 16px;
+    font-size: 13px;
 }
 
 .litebans-label-ban {
